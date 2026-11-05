@@ -1,0 +1,1805 @@
+{
+  "start_message": [
+    "Hello and welcome! I'm your home-search assistant, and I'm here to help you find a place that really fits you.",
+    "Hi there, welcome! I'll be helping you find your next home today.",
+    "Welcome! Let's find you a home you'll love."
+  ],
+  "instructions": [
+    "I'll ask you up to {n} quick questions to find the homes that best match what you're looking for.",
+    "How to answer:",
+    "  - Type your answer and press Enter. Feel free to use your own words: capital letters, accents and synonyms are fine (e.g. 'buy', 'apartment', 'near the beach').",
+    "  - Not sure how to answer? Type 'help' and I'll explain. If I don't understand you, I'll explain too.",
+    "  - If a question doesn't matter to you, type 'any'.",
+    "  - Want to see the results before we finish? Type 'show me' at any time.",
+    "  - Changed your mind? Type e.g. 'change the budget' or 'actually, Gràcia', or 'back' to go back.",
+    "  - To leave at any time, type 'quit'."
+  ],
+  "reactions": {
+    "understood": [
+      "Got it: {value}.",
+      "Perfect: {value}.",
+      "Noted: {value}.",
+      "All right: {value}."
+    ],
+    "did_you_mean": [
+      "Did you mean {value}? (Yes / No)",
+      "Just to check: do you mean {value}? (Yes / No)"
+    ],
+    "which_one": [
+      "Sorry, do you mean {options}?",
+      "Just to be sure: {options}?"
+    ],
+    "not_understood": [
+      "Sorry, I didn't quite get that. I'm expecting {expected}.",
+      "I'm not sure I understood. I'm expecting {expected}.",
+      "Sorry, I didn't catch that. Could you give me {expected}?"
+    ],
+    "explain_again": [
+      "Let me explain again how to answer this question:",
+      "No worries, here's how you can answer:"
+    ],
+    "offer_skip": [
+      "If you'd rather not answer, type 'any' and we'll move on.",
+      "If you prefer to skip this one, just type 'any'."
+    ],
+    "empty": [
+      "It looks like you didn't type anything. I'm expecting {expected}.",
+      "I didn't get any answer there. I'm expecting {expected}."
+    ],
+    "several_numbers": [
+      "I found several numbers ({numbers}). Please give just one, or a range such as 'between {low} and {high}'."
+    ],
+    "out_of_range": [
+      "None of our homes matches {value}: ours have {available}. Do you want to change your answer? (Yes / No)"
+    ],
+    "no_value_matches": [
+      "None of our homes matches {value}. Do you want to change your answer? (Yes / No)",
+      "I have no home with {value}, sorry. Would you like to change your answer? (Yes / No)"
+    ],
+    "implausible_rent": [
+      "{value} looks more like a purchase price than a monthly rent. Is that right? (Yes / No)"
+    ],
+    "rent_or_buy": [
+      "Is that a monthly rent or a purchase price? (rent / buy)"
+    ],
+    "other_budget": {
+      "rent": "And if you rented, what would be your maximum monthly rent? (type 'any' if it doesn't matter)",
+      "sale": "And if you bought, what would be your maximum budget? (type 'any' if it doesn't matter)"
+    },
+    "keep_answer": [
+      "OK, I'll keep {value}.",
+      "Fine, I'll keep {value}, as you said."
+    ],
+    "try_again": [
+      "No problem, let's try again:",
+      "Sure, tell me again:",
+      "OK, let's try once more:"
+    ],
+    "yes_no_expected": [
+      "Please answer yes or no.",
+      "Sorry, just yes or no, please."
+    ],
+    "confirm_exit": [
+      "Are you sure you want to leave? If you'd like to see the homes first, type 'show me'. (Yes / No)"
+    ],
+    "continue": [
+      "OK, let's continue.",
+      "Great, let's carry on then."
+    ],
+    "range": {
+      "min": "at least {min} {unit}",
+      "max": "up to {max} {unit}",
+      "between": "between {min} and {max} {unit}",
+      "exact": "exactly {min} {unit}"
+    },
+    "labels": {
+      "rent": "renting",
+      "sale": "buying",
+      "Yes": "yes",
+      "No": "no",
+      "any": "no preference"
+    },
+    "acknowledge": [
+      "Perfect.",
+      "Great.",
+      "Noted.",
+      "All right.",
+      "Understood."
+    ],
+    "acknowledge_any": [
+      "No problem, I won't filter by that.",
+      "Fine, I'll keep my options open on that.",
+      "OK, that leaves more homes to choose from."
+    ],
+    "help": [
+      "Of course, here's how you can answer:",
+      "Sure! Here's how to answer this one:"
+    ],
+    "count_start": [
+      "Right now we have {count} available. Let's narrow them down!",
+      "We currently have {count} on our list. Let's find yours!"
+    ],
+    "count_update": [
+      "That leaves {count}.",
+      "That rules out {removed}, so {count} still match.",
+      "We're down to {count}."
+    ],
+    "count_few": [
+      "Only {count} left, we're getting close!",
+      "Just {count} left now."
+    ],
+    "count_one": [
+      "Only one home left that fits everything!",
+      "We're down to just one home!"
+    ],
+    "no_matches": [
+      "With that answer, no home would match everything you've told me so far (until now we had {before}). Do you want to change it? (Yes / No)",
+      "Careful: with that, none of our homes would match all your answers (we had {before} until now). Would you like to change it? (Yes / No)"
+    ],
+    "keep_no_matches": [
+      "OK, I'll keep it, although for now no home matches."
+    ],
+    "count": {
+      "one": "one home",
+      "many": "{n} homes"
+    },
+    "show_results": [
+      "Sure! Let's look at what we have so far.",
+      "Of course, here's what I've found so far."
+    ],
+    "offer_summary": [
+      "Since no home matches right now, would you like me to stop here and show you a summary? (Yes / No)",
+      "As nothing matches at the moment, shall we stop here and look at a summary? (Yes / No)"
+    ],
+    "show_me_hint": [
+      "Type 'show me' if you'd like to see them now.",
+      "If you like, type 'show me' to see them right away."
+    ],
+    "correction_ack": [
+      "Sure, let's change {slot}.",
+      "No problem, let's go back to {slot}."
+    ],
+    "correction_unclear": [
+      "Sure! Tell me what you'd like to change, for example 'change the budget' or 'change the area'."
+    ],
+    "correction_not_yet": [
+      "I haven't asked you about {slot}, so there's nothing to change there yet.",
+      "We haven't talked about {slot} yet."
+    ],
+    "count_more": [
+      "That opens things up: now we have {count} to choose from.",
+      "Good, that gives us {count} to choose from."
+    ],
+    "zones_available": [
+      "So far, there are homes for you in {zones}.",
+      "With what you've told me, there are homes in {zones}.",
+      "The homes that fit so far are in {zones}."
+    ],
+    "zones_single": [
+      "So far, the only area with homes for you is {zones}.",
+      "With what you've told me, there are only homes in {zones}."
+    ],
+    "zones_whole_city": "every district of {city}",
+    "zones_city_except": "every district of {city} except {missing}",
+    "slots": {
+      "type": "the operation",
+      "price": "the budget",
+      "location": "the area",
+      "property_type": "the type of property",
+      "shared": "sharing",
+      "bedrooms": "the bedrooms",
+      "bathrooms": "the bathrooms",
+      "square_meters": "the size",
+      "condition": "the condition",
+      "floor": "the floor",
+      "terrace": "the terrace",
+      "elevator": "the elevator",
+      "garden": "the garden",
+      "parking": "the parking space",
+      "furnished": "the furniture",
+      "pets": "the pets",
+      "commercial_use": "the commercial use"
+    },
+    "correction_nothing_back": [
+      "We're at the very first question, so there's nothing to go back to."
+    ],
+    "correction_done": [
+      "Done, I've changed {slot} to {value}.",
+      "OK, I've changed {slot} to {value}."
+    ],
+    "which_change": [
+      "Sure, what would you like to change? For example 'the budget' or 'the area'."
+    ],
+    "correction_done_value": [
+      "Done, I've updated {slot}: {value}.",
+      "OK, I've updated {slot}: {value}."
+    ],
+    "explore_menu": [
+      "What would you like to do? Type 'all' to see every home in detail, 'next' to go through them one by one, or a home's number (e.g. {example}) to see it. You can also change something (e.g. 'change the budget'), or type 'quit' to finish."
+    ],
+    "explore_again": [
+      "Anything else? ('next', 'prev', a home's number, 'all', a change, or 'quit' to finish)"
+    ],
+    "explore_last": [
+      "That was the last one. Type 'prev' to go back, or 'all' to see them all."
+    ],
+    "explore_first": [
+      "That's the first one. Type 'next' to see the following home."
+    ],
+    "explore_no_id": [
+      "Home #{id} isn't among these results. The available ones are: {ids}."
+    ],
+    "explore_unclear": [
+      "Sorry, I didn't get that. You can type 'all', 'next', 'prev', a home's number, a change (e.g. 'change the budget'), or 'quit' to finish."
+    ],
+    "nothing_to_explore": [
+      "Would you like to change anything? For example 'change the budget' or 'actually, Gràcia'. Type 'quit' to finish."
+    ]
+  },
+  "comments": {
+    "type": {
+      "rent": [
+        "Renting, perfect: it gives you a lot of flexibility.",
+        "Renting it is, great."
+      ],
+      "sale": [
+        "Buying: a big step, and an exciting one!",
+        "Great, let's find you a home to buy."
+      ]
+    },
+    "property_type": {
+      "flat": [
+        "A flat, the most popular choice in the city.",
+        "A flat, perfect."
+      ],
+      "house": [
+        "A house: more space and more privacy."
+      ],
+      "chalet": [
+        "A chalet, lovely: plenty of space and usually a garden."
+      ],
+      "duplex": [
+        "A duplex, nice: two floors, very practical."
+      ],
+      "office": [
+        "An office, noted. Let's find you a good place to work."
+      ],
+      "premises": [
+        "Commercial premises, noted. I'll focus on spaces for a business."
+      ]
+    },
+    "location": {
+      "Ciutat Vella": [
+        "Ciutat Vella, the historic heart of the city: perfect if you like being in the middle of everything."
+      ],
+      "Eixample": [
+        "The Eixample: central, well connected and full of classic Barcelona buildings."
+      ],
+      "Sants-Montjuïc": [
+        "Sants-Montjuïc: well connected, with Montjuïc park right next door."
+      ],
+      "Les Corts": [
+        "Les Corts: a calm, residential area with good transport links."
+      ],
+      "Sarrià-Sant Gervasi": [
+        "Sarrià-Sant Gervasi: quiet, green and one of the most sought-after areas."
+      ],
+      "Gràcia": [
+        "Gràcia, lovely choice: lively squares and a real neighbourhood feel."
+      ],
+      "Horta-Guinardó": [
+        "Horta-Guinardó: quieter, hilly and close to nature."
+      ],
+      "Nou Barris": [
+        "Nou Barris: a residential district with some of the most affordable prices in the city."
+      ],
+      "Sant Andreu": [
+        "Sant Andreu: it still keeps its village-like atmosphere."
+      ],
+      "Sant Martí": [
+        "Sant Martí: from Poblenou to the beach, a district that has changed a lot in recent years."
+      ],
+      "L'Hospitalet de Llobregat": [
+        "L'Hospitalet: right next to Barcelona, well connected and usually more affordable."
+      ],
+      "Santa Coloma de Gramenet": [
+        "Santa Coloma de Gramenet: sure... I guess... if that's what you're into :/ ..."
+      ],
+      "Esplugues de Llobregat": [
+        "Esplugues: a quiet town right next to the upper part of Barcelona."
+      ]
+    },
+    "condition": {
+      "new": [
+        "Brand new, noted: I'll look for newly built homes."
+      ],
+      "very good": [
+        "In very good condition, so you can move straight in."
+      ],
+      "renovated": [
+        "Renovated, good idea: everything up to date."
+      ],
+      "needs renovation": [
+        "A home to renovate: a great way to make it your own, and often cheaper."
+      ]
+    },
+    "shared": {
+      "Yes": [
+        "Sharing is a smart way to save on rent, noted."
+      ]
+    },
+    "terrace": {
+      "Yes": [
+        "A terrace, great: with Barcelona's weather you'll make good use of it."
+      ]
+    },
+    "elevator": {
+      "Yes": [
+        "An elevator, noted: it makes everyday life much easier."
+      ]
+    },
+    "garden": {
+      "Yes": [
+        "A garden, lovely: I'll only show homes that have one."
+      ]
+    },
+    "parking": {
+      "Yes": [
+        "Parking can be hard to find in the city, so that's a good filter."
+      ]
+    },
+    "furnished": {
+      "Yes": [
+        "Furnished, perfect: you'll be able to move in with just your suitcase."
+      ]
+    },
+    "pets": {
+      "Yes": [
+        "Of course! I'll only show homes where your pets are welcome too."
+      ]
+    },
+    "commercial_use": {
+      "Yes": [
+        "Noted: I'll only show properties where you can run a business."
+      ]
+    }
+  },
+  "summary": {
+    "intro": [
+      "Let me recap: you're looking for {summary}.",
+      "So, to sum up: you're looking for {summary}."
+    ],
+    "property": {
+      "flat": "a flat",
+      "house": "a house",
+      "chalet": "a chalet",
+      "duplex": "a duplex",
+      "office": "an office",
+      "premises": "commercial premises",
+      "any": "a home"
+    },
+    "operation": {
+      "rent": "to rent",
+      "sale": "to buy"
+    },
+    "condition": {
+      "new": "newly built",
+      "very good": "in very good condition",
+      "good": "in good condition",
+      "renovated": "renovated",
+      "needs renovation": "in need of renovation"
+    },
+    "features": {
+      "terrace": "a terrace",
+      "elevator": "an elevator",
+      "garden": "a garden",
+      "parking": "a parking space",
+      "furnished": "furniture",
+      "pets": "pets allowed",
+      "commercial_use": "commercial use allowed"
+    },
+    "not_shared": "not shared",
+    "intro_early": [
+      "Here's what I've noted so far: you're looking for {summary}.",
+      "So far, you're looking for {summary}."
+    ]
+  },
+  "results": {
+    "found": [
+      "Good news! I found {count} for you:",
+      "Here's what I found: {count} matching your preferences.",
+      "I have {count} that could be just right for you:"
+    ],
+    "one": "one home",
+    "many": "{n} homes",
+    "none": [
+      "I'm sorry, I couldn't find any home that matches all of that right now.",
+      "Unfortunately, none of our homes matches all your criteria at the moment."
+    ],
+    "sorted": [
+      "I've sorted them from the cheapest to the most expensive.",
+      "They're sorted by price, from the cheapest."
+    ],
+    "sorted_mixed": [
+      "Homes to rent come first, then homes to buy, each from the cheapest to the most expensive."
+    ],
+    "group": {
+      "rent": "Homes to rent:",
+      "sale": "Homes to buy:"
+    },
+    "near_intro": [
+      "No home matches everything, but these come close:",
+      "Nothing matches all your wishes, but these are very close:"
+    ],
+    "near_reason": [
+      "It matches everything except {slots}.",
+      "Everything fits except {slots}."
+    ],
+    "position": "Home {position} of {total} · #{id}",
+    "near_short": "everything except {slots}",
+    "per_month": "euros/month",
+    "list_again": "Your results:"
+  },
+  "end_message": [
+    "Thank you for letting me help you with your search. Good luck, and goodbye!",
+    "It's been a pleasure helping you. Best of luck with your new home, goodbye!",
+    "Thanks for your time, and I hope you find the perfect place soon. Goodbye!"
+  ],
+  "questions": [
+    {
+      "question": [
+        "Are you looking to buy or to rent?",
+        "To start with: are you thinking of buying or renting?",
+        "First things first: would you like to buy or to rent?"
+      ],
+      "type": "multichoice",
+      "answer_key": "type",
+      "help": "Type 'buy' (or 'sale') if you want to buy, or 'rent' if you want to rent.",
+      "prompt": "Your answer: ",
+      "expects": "'buy' or 'rent'"
+    },
+    {
+      "question": [
+        "What is your budget?",
+        "How much would you like to spend?",
+        "Let's talk about money: what's your budget?"
+      ],
+      "type": "numerical",
+      "answer_key": "price",
+      "help_by_type": {
+        "rent": "Type your maximum monthly rent in euros (e.g. 850, 1.200 or 1.2k). You can also give a range ('between 700 and 900') or an approximate figure ('around 800'). Rents available: {min} - {max} euros/month.",
+        "sale": "Type your maximum budget (e.g. 250k, 250.000 or 250 thousand). You can also give a range ('between 200k and 300k') or an approximate figure ('around 250k'). Prices available: {min} - {max} euros."
+      },
+      "prompt": "Your answer: ",
+      "expects": "an amount in euros, like 850, 1.200 or 250k",
+      "unit_by_type": {
+        "rent": "euros a month",
+        "sale": "euros"
+      },
+      "depends_on": [
+        "type"
+      ]
+    },
+    {
+      "question": [
+        "Which area would you like to live in?",
+        "Where would you like to live?",
+        "Which part of the city do you have in mind?"
+      ],
+      "type": "multichoice",
+      "answer_key": "location",
+      "help": "Name a district, a nearby town, 'Barcelona' for the whole city, or an area such as 'city centre' or 'near the beach'. You can also give several places (e.g. 'Gràcia or Eixample').",
+      "prompt": "Your answer: ",
+      "expects": "a district, a nearby town or an area, like 'Gràcia', 'Hospitalet' or 'near the beach'"
+    },
+    {
+      "question": [
+        "What kind of property are you looking for?",
+        "What type of home do you have in mind?"
+      ],
+      "type": "multichoice",
+      "answer_key": "property_type",
+      "help": "Type one of the property types listed below ('premises' = commercial premises, such as a shop).",
+      "prompt": "Your answer: ",
+      "expects": "a type of property, like 'flat', 'house' or 'office'"
+    },
+    {
+      "question": [
+        "Would you be OK sharing the home with other people (renting a room)?",
+        "Would you consider sharing the home with other people (renting a room)?"
+      ],
+      "type": "multichoice",
+      "answer_key": "shared",
+      "ask_if": {
+        "type": [
+          "rent"
+        ],
+        "property_type": [
+          "flat",
+          "house",
+          "duplex",
+          "chalet"
+        ]
+      },
+      "help": "Answer Yes to also see rooms in shared homes. Answer No to see only homes just for you.",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "How many bedrooms do you need?",
+        "How many bedrooms would you like?"
+      ],
+      "type": "numerical",
+      "answer_key": "bedrooms",
+      "ask_if": {
+        "property_type": [
+          "flat",
+          "house",
+          "duplex",
+          "chalet"
+        ]
+      },
+      "help": "Type the minimum number of bedrooms you need (e.g. 3). You can also say 'between 2 and 3', 'exactly 2', 'around 3' or describe them ('2 doubles and 1 single'). Our homes have between {min} and {max} bedrooms.",
+      "confirm_sum": [
+        "So that's {total} bedrooms in total, is that right? (Yes / No)",
+        "That makes {total} bedrooms altogether, correct? (Yes / No)"
+      ],
+      "prompt": "Your answer: ",
+      "expects": "a number of bedrooms, like 3 or 'between 2 and 3'",
+      "unit": "bedrooms",
+      "unit_one": "bedroom",
+      "question_if": {
+        "shared": {
+          "Yes": [
+            "How many bedrooms should the whole home have (counting your own room if you share)?",
+            "In total, how many bedrooms should the home have (including yours, if you share)?"
+          ]
+        }
+      }
+    },
+    {
+      "question": [
+        "How many bathrooms do you need?",
+        "And how many bathrooms?"
+      ],
+      "type": "numerical",
+      "answer_key": "bathrooms",
+      "help": "Type the minimum number of bathrooms you need (e.g. 2). You can also say 'between 1 and 2', 'exactly 1' or describe them ('1 full bathroom and 1 toilet'). Our homes have between {min} and {max} bathrooms.",
+      "confirm_sum": [
+        "So that's {total} bathrooms in total, is that right? (Yes / No)",
+        "That makes {total} bathrooms altogether, correct? (Yes / No)"
+      ],
+      "prompt": "Your answer: ",
+      "expects": "a number of bathrooms, like 2",
+      "unit": "bathrooms",
+      "unit_one": "bathroom"
+    },
+    {
+      "question": [
+        "How big should the home be?",
+        "How much space do you need?"
+      ],
+      "type": "numerical",
+      "answer_key": "square_meters",
+      "help": "Type the minimum size in square metres (e.g. 80 or 80 m2). You can also say 'between 70 and 90' or 'around 80'. Our homes range from {min} to {max} m2.",
+      "prompt": "Your answer: ",
+      "expects": "a size in square metres, like 80",
+      "unit": "m2"
+    },
+    {
+      "question": [
+        "What condition should the property be in?",
+        "What do you prefer regarding the condition of the property?"
+      ],
+      "type": "multichoice",
+      "answer_key": "condition",
+      "help": "Type one of the conditions listed below.",
+      "prompt": "Your answer: ",
+      "expects": "a condition, like 'new', 'good' or 'needs renovation'"
+    },
+    {
+      "question": [
+        "What is the lowest floor you would like to live on?",
+        "Which is the lowest floor you'd be happy to live on?"
+      ],
+      "type": "numerical",
+      "answer_key": "floor",
+      "ask_if": {
+        "property_type": [
+          "flat",
+          "duplex",
+          "office",
+          "premises"
+        ]
+      },
+      "help": "Type the lowest floor you would accept: 0 = ground floor, 1 = first floor, and so on (e.g. 2, '2nd' or 'second'). We'll show homes on that floor or higher (floors {min} to {max} available).",
+      "prompt": "Your answer: ",
+      "expects": "a floor number, like 2 (0 = ground floor)",
+      "describe": {
+        "min": "floor {min} or higher",
+        "max": "floor {max} or lower",
+        "between": "floors {min} to {max}",
+        "exact": "floor {min}"
+      }
+    },
+    {
+      "question": [
+        "Do you want a terrace?",
+        "Would you like a terrace?"
+      ],
+      "type": "multichoice",
+      "answer_key": "terrace",
+      "help": "Answer Yes if a terrace is a must. Answer No if it doesn't matter (we'll show homes with and without one).",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Do you need an elevator?",
+        "Is an elevator important for you?"
+      ],
+      "type": "multichoice",
+      "answer_key": "elevator",
+      "help": "Answer Yes if an elevator is a must. Answer No if it doesn't matter (we'll show homes with and without one).",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Do you want a garden?",
+        "Would you like a garden?"
+      ],
+      "type": "multichoice",
+      "answer_key": "garden",
+      "ask_if": {
+        "property_type": [
+          "house",
+          "chalet"
+        ]
+      },
+      "help": "Answer Yes if a garden is a must. Answer No if it doesn't matter (we'll show homes with and without one).",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Do you need a parking space?",
+        "Will you need a parking space?"
+      ],
+      "type": "multichoice",
+      "answer_key": "parking",
+      "help": "Answer Yes if a parking space is a must. Answer No if it doesn't matter (we'll show homes with and without one).",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Do you want it furnished?",
+        "Would you prefer it furnished?"
+      ],
+      "type": "multichoice",
+      "answer_key": "furnished",
+      "help": "Answer Yes if it must come furnished. Answer No if it doesn't matter (we'll show furnished and unfurnished homes).",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Will you live with pets?",
+        "Do you have any pets that will live with you?"
+      ],
+      "type": "multichoice",
+      "answer_key": "pets",
+      "ask_if": {
+        "type": [
+          "rent"
+        ]
+      },
+      "help": "Answer Yes to see only homes where pets are allowed. Answer No otherwise.",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    },
+    {
+      "question": [
+        "Will you use the property for a business?",
+        "Do you plan to run a business from the property?"
+      ],
+      "type": "multichoice",
+      "answer_key": "commercial_use",
+      "help": "Answer Yes to see only homes allowed for commercial use. Answer No otherwise.",
+      "prompt": "Your answer: ",
+      "expects": "yes or no"
+    }
+  ],
+  "houses": [
+    {
+      "id": 1,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "1200",
+      "square_meters": "100",
+      "floor": "3",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 2,
+      "type": "sale",
+      "property_type": "house",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "250k",
+      "square_meters": "120",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 3,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "800",
+      "square_meters": "80",
+      "floor": "8",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 4,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "100k",
+      "square_meters": "50",
+      "floor": "1",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 5,
+      "type": "rent",
+      "property_type": "office",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "650",
+      "square_meters": "55",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "Yes",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 6,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "120k",
+      "square_meters": "80",
+      "floor": "4",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 7,
+      "type": "rent",
+      "property_type": "duplex",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "5",
+      "bathrooms": "2",
+      "price": "2000",
+      "square_meters": "150",
+      "floor": "2",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Santa Coloma de Gramenet",
+      "city": "Santa Coloma de Gramenet"
+    },
+    {
+      "id": 8,
+      "type": "sale",
+      "property_type": "duplex",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "400k",
+      "square_meters": "150",
+      "floor": "5",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Esplugues de Llobregat",
+      "city": "Esplugues de Llobregat"
+    },
+    {
+      "id": 9,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "700",
+      "square_meters": "55",
+      "floor": "3",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Esplugues de Llobregat",
+      "city": "Esplugues de Llobregat"
+    },
+    {
+      "id": 10,
+      "type": "sale",
+      "property_type": "office",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "3",
+      "price": "262k",
+      "square_meters": "75",
+      "floor": "1",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Esplugues de Llobregat",
+      "city": "Esplugues de Llobregat"
+    },
+    {
+      "id": 11,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1100",
+      "square_meters": "60",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Esplugues de Llobregat",
+      "city": "Esplugues de Llobregat"
+    },
+    {
+      "id": 12,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "350k",
+      "square_meters": "100",
+      "floor": "6",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Esplugues de Llobregat",
+      "city": "Esplugues de Llobregat"
+    },
+    {
+      "id": 13,
+      "type": "sale",
+      "property_type": "duplex",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "330k",
+      "square_meters": "150",
+      "floor": "2",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 14,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1500",
+      "square_meters": "100",
+      "floor": "3",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 15,
+      "type": "sale",
+      "property_type": "premises",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "190k",
+      "square_meters": "75",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 16,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "176k",
+      "square_meters": "80",
+      "floor": "1",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 17,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "450",
+      "square_meters": "45",
+      "floor": "6",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Nou Barris",
+      "city": "Barcelona"
+    },
+    {
+      "id": 18,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "850",
+      "square_meters": "50",
+      "floor": "4",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Gràcia",
+      "city": "Barcelona"
+    },
+    {
+      "id": 19,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "600",
+      "square_meters": "75",
+      "floor": "1",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Sant Andreu",
+      "city": "Barcelona"
+    },
+    {
+      "id": 20,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "360k",
+      "square_meters": "90",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Sant Martí",
+      "city": "Barcelona"
+    },
+    {
+      "id": 21,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "480k",
+      "square_meters": "120",
+      "floor": "3",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Eixample",
+      "city": "Barcelona"
+    },
+    {
+      "id": 22,
+      "type": "rent",
+      "property_type": "chalet",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "3000",
+      "square_meters": "100",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Sarrià-Sant Gervasi",
+      "city": "Barcelona"
+    },
+    {
+      "id": 23,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "285k",
+      "square_meters": "95",
+      "floor": "1",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Horta-Guinardó",
+      "city": "Barcelona"
+    },
+    {
+      "id": 24,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "200k",
+      "square_meters": "50",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Ciutat Vella",
+      "city": "Barcelona"
+    },
+    {
+      "id": 25,
+      "type": "sale",
+      "property_type": "office",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "180k",
+      "square_meters": "60",
+      "floor": "3",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Sants-Montjuïc",
+      "city": "Barcelona"
+    },
+    {
+      "id": 26,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "240k",
+      "square_meters": "80",
+      "floor": "1",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Sant Andreu",
+      "city": "Barcelona"
+    },
+    {
+      "id": 27,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1450",
+      "square_meters": "67",
+      "floor": "3",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Les Corts",
+      "city": "Barcelona"
+    },
+    {
+      "id": 28,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "229k",
+      "square_meters": "51",
+      "floor": "8",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Les Corts",
+      "city": "Barcelona"
+    },
+    {
+      "id": 29,
+      "type": "sale",
+      "property_type": "chalet",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "5",
+      "bathrooms": "3",
+      "price": "1298k",
+      "square_meters": "260",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Les Corts",
+      "city": "Barcelona"
+    },
+    {
+      "id": 30,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1550",
+      "square_meters": "81",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Nou Barris",
+      "city": "Barcelona"
+    },
+    {
+      "id": 31,
+      "type": "sale",
+      "property_type": "house",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "378k",
+      "square_meters": "130",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Nou Barris",
+      "city": "Barcelona"
+    },
+    {
+      "id": 32,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "Yes",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "575",
+      "square_meters": "99",
+      "floor": "5",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Gràcia",
+      "city": "Barcelona"
+    },
+    {
+      "id": 33,
+      "type": "sale",
+      "property_type": "duplex",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "562k",
+      "square_meters": "96",
+      "floor": "4",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Gràcia",
+      "city": "Barcelona"
+    },
+    {
+      "id": 34,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "1025",
+      "square_meters": "54",
+      "floor": "2",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Sant Andreu",
+      "city": "Barcelona"
+    },
+    {
+      "id": 35,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "Yes",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "550",
+      "square_meters": "78",
+      "floor": "8",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Sant Martí",
+      "city": "Barcelona"
+    },
+    {
+      "id": 36,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "289k",
+      "square_meters": "72",
+      "floor": "3",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Sant Martí",
+      "city": "Barcelona"
+    },
+    {
+      "id": 37,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1650",
+      "square_meters": "74",
+      "floor": "5",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Eixample",
+      "city": "Barcelona"
+    },
+    {
+      "id": 38,
+      "type": "rent",
+      "property_type": "premises",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "1",
+      "bathrooms": "1",
+      "price": "2125",
+      "square_meters": "112",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "Yes",
+      "location": "Eixample",
+      "city": "Barcelona"
+    },
+    {
+      "id": 39,
+      "type": "rent",
+      "property_type": "chalet",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "5",
+      "bathrooms": "3",
+      "price": "5375",
+      "square_meters": "277",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Sarrià-Sant Gervasi",
+      "city": "Barcelona"
+    },
+    {
+      "id": 40,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "785k",
+      "square_meters": "100",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Sarrià-Sant Gervasi",
+      "city": "Barcelona"
+    },
+    {
+      "id": 41,
+      "type": "rent",
+      "property_type": "house",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "2",
+      "price": "1700",
+      "square_meters": "124",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Horta-Guinardó",
+      "city": "Barcelona"
+    },
+    {
+      "id": 42,
+      "type": "sale",
+      "property_type": "chalet",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "5",
+      "bathrooms": "3",
+      "price": "758k",
+      "square_meters": "207",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "Yes",
+      "garden": "Yes",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Horta-Guinardó",
+      "city": "Barcelona"
+    },
+    {
+      "id": 43,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "Yes",
+      "bedrooms": "5",
+      "bathrooms": "2",
+      "price": "625",
+      "square_meters": "96",
+      "floor": "8",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Ciutat Vella",
+      "city": "Barcelona"
+    },
+    {
+      "id": 44,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "1750",
+      "square_meters": "62",
+      "floor": "6",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Ciutat Vella",
+      "city": "Barcelona"
+    },
+    {
+      "id": 45,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "renovated",
+      "shared": "Yes",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "525",
+      "square_meters": "114",
+      "floor": "1",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "Sants-Montjuïc",
+      "city": "Barcelona"
+    },
+    {
+      "id": 46,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "2",
+      "bathrooms": "1",
+      "price": "234k",
+      "square_meters": "51",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "Sants-Montjuïc",
+      "city": "Barcelona"
+    },
+    {
+      "id": 47,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "good",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "1525",
+      "square_meters": "97",
+      "floor": "2",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "Yes",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 48,
+      "type": "sale",
+      "property_type": "flat",
+      "condition": "very good",
+      "shared": "No",
+      "bedrooms": "3",
+      "bathrooms": "1",
+      "price": "257k",
+      "square_meters": "84",
+      "floor": "7",
+      "elevator": "Yes",
+      "terrace": "Yes",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 49,
+      "type": "sale",
+      "property_type": "house",
+      "condition": "new",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "362k",
+      "square_meters": "142",
+      "floor": "0",
+      "elevator": "No",
+      "terrace": "No",
+      "garden": "Yes",
+      "parking": "Yes",
+      "furnished": "No",
+      "pets": "Yes",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    },
+    {
+      "id": 50,
+      "type": "rent",
+      "property_type": "flat",
+      "condition": "needs renovation",
+      "shared": "No",
+      "bedrooms": "4",
+      "bathrooms": "2",
+      "price": "1375",
+      "square_meters": "99",
+      "floor": "5",
+      "elevator": "Yes",
+      "terrace": "No",
+      "garden": "No",
+      "parking": "No",
+      "furnished": "No",
+      "pets": "No",
+      "commercial_use": "No",
+      "location": "L'Hospitalet de Llobregat",
+      "city": "L'Hospitalet de Llobregat"
+    }
+  ],
+  "house": {
+    "kinds": {
+      "flat": "flat",
+      "house": "house",
+      "chalet": "chalet",
+      "duplex": "duplex",
+      "office": "office",
+      "premises": "commercial premises"
+    },
+    "operation": {
+      "rent": "for rent",
+      "sale": "for sale"
+    },
+    "title": "{kind} {operation} in {location}, {price}.",
+    "title_shared": "Room in a shared {kind} for rent in {location}, {price} per room.",
+    "price_rent": "{amount} euros a month",
+    "price_sale": "{amount} euros",
+    "rooms": {
+      "one": "1 bedroom",
+      "many": "{n} bedrooms"
+    },
+    "rooms_work": {
+      "one": "1 room",
+      "many": "{n} rooms"
+    },
+    "baths": {
+      "one": "1 bathroom",
+      "many": "{n} bathrooms"
+    },
+    "layout": "It has {rooms} and {baths}, {size} m2{floor}, and it is {condition}.",
+    "floor": " on the {ordinal} floor",
+    "ground_floor": " on the ground floor",
+    "with": "It comes with {features}.",
+    "without": "It doesn't have {features}.",
+    "pets_yes": "Pets are welcome.",
+    "pets_no": "Pets are not allowed.",
+    "commercial": "It can also be used for a business."
+  }
+}

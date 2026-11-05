@@ -1,0 +1,28 @@
+%% Arquitectura del sistema 2 (chatbot con LLM y tools) y capas de guardrails (defensa en capas, Lecture 4).
+%% Pegar en https://mermaid.live y exportar como PNG o SVG.
+flowchart TD
+    U[/"Mensaje del cliente"/] --> FLOW{"¿Comando de flujo?<br/>help · exit · despedida"}
+    FLOW -- "Sí" --> FIX0["Texto del código: ayuda o cierre<br/>con resumen de la sesión"]
+    FLOW -- "No" --> IN{"Guardrail de entrada<br/>tokens de control · inyección y rol (en/es/ca)<br/>discriminación · longitud"}
+    IN -- "Bloqueado" --> FIXED["Respuesta fija en el idioma del cliente<br/>(no llega al modelo ni al historial)"]
+    IN -- "OK" --> LLM["Qwen2.5-Coder-3B-Instruct<br/>system prompt + historial + idioma del turno"]
+
+    LLM --> PARSE{"¿Pide una tool?"}
+    PARSE -- "JSON inválido / vacío" --> NUDGE["Indicación interna<br/>(no se guarda en el historial)"]
+    NUDGE --> LLM
+    PARSE -- "Sí" --> EXE{"Guardrail de ejecución<br/>esquema y tipos · anclaje de argumentos<br/>#id mencionado · máx. 3 tools por turno"}
+    EXE --> TOOLS["Tools (solo lectura, reutilizan el sistema 1)<br/>search_homes: 16 argumentos, 3 líneas + notas<br/>get_home_details: ficha en lenguaje natural"]
+    TOOLS --> SAN["Resultado saneado<br/>(sin tokens de control, longitud máx.)"]
+    SAN --> LLM
+
+    PARSE -- "No: responde" --> FORCE{"Guardrail de flujo<br/>¿hay criterios o un #id y no ha consultado?"}
+    FORCE -- "Sí (una vez)" --> NUDGE
+    FORCE -- "No" --> OUT{"Guardrail de salida<br/>1. reglas: fuga, código, promesas, datos personales,<br/>lugares, datos no anclados, contradicción, mecánica interna<br/>2. LLM-as-judge: P(NO) ≥ 0,7<br/>3. idioma"}
+    OUT -- "Problema (1.ª vez)" --> NUDGE
+    OUT -- "Problema grave persistente" --> FIXED2["Respuesta fija contextual<br/>(reserva, precio, contacto, fuera de dominio...)"]
+    OUT -- "OK o problema leve" --> FIN["finalize: líneas exactas de la tool, traducidas,<br/>aviso si pide algo imposible, sin Markdown"]
+    FIN --> A[/"Respuesta"/]
+    FIXED2 --> A
+
+    LOG[("Registro JSONL de la sesión<br/>todos los intentos y capas")]
+    A -.-> LOG

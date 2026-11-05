@@ -1,0 +1,310 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+% shorthands=off: sense això, babel converteix " en una drecera i trenca el text i els \texttt.
+\usepackage[catalan,shorthands=off]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+% Noms de fitxer llargs (\path): es poden tallar a _ . /
+\makeatletter\g@addto@macro{\UrlBreaks}{\do\_\do\.}\makeatother
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em} % evita que els \texttt llargs surtin del marge
+
+\title{Pràctica 1: sistemes de diàleg per a la recomanació d'habitatges}
+\author{Laia Beyloc i Ilyas Ouacham\\[2pt]\small Tractament de la Veu i el Diàleg}
+\date{Octubre 2026}
+
+\begin{document}
+
+\maketitle
+
+% ---------------------------------------------------------------------------
+\section{Introducció}
+
+L'objectiu de la pràctica és construir un recomanador immobiliari en forma de sistema de diàleg, aplicant el mètode iteratiu vist a classe per millorar dos sistemes de referència. El primer està basat en regles i parteix del sistema de l'Exercici~6. El segon és un xatbot que fa servir un LLM (Qwen2.5-Coder-3B-Instruct) i consulta els habitatges mitjançant tools; per a aquest, l'enunciat demanava avaluar la qualitat de les recomanacions i reduir les al·lucinacions i els comportaments no desitjats, i el notebook concretava tres punts: millorar el flux de la conversa i la tool de filtratge, i afegir guardrails.
+
+Els dos sistemes fan servir la mateixa base de dades, \texttt{house\_data\_v2.json}, que amplia la base original proporcionada (\texttt{house\_data.json}): en conserva els 26 habitatges, els afegeix els atributs nous i hi suma 24 habitatges generats. També comparteixen codi, perquè el sistema~2 reutilitza la comprensió del llenguatge i el filtratge del sistema~1.
+
+La diferència de fons entre tots dos és com es verifica una millora. El comportament del sistema de regles està escrit per endavant, i n'hi ha prou amb una prova determinista per comprovar que una regla fa el que ha de fer. El d'un LLM és probabilístic: un canvi menor en el prompt pot alterar la resposta a una petició que no hi té relació. Per això cada versió del sistema~2 s'ha validat amb una bateria d'avaluació executada sobre el model real. El codi està organitzat en dos paquets de Python, \texttt{recomanador/} i \texttt{recomanador\_llm/}, cadascun amb la seva bateria de proves; els notebooks es limiten a importar-los i executar-los.
+
+% ---------------------------------------------------------------------------
+\section{Sistema 1: recomanador basat en regles}
+
+\subsection{Plantejament i mètode}
+
+La primera qüestió de disseny va ser si un diàleg és la manera adequada de resoldre la tasca. Un formulari de filtres, com el dels portals immobiliaris, també ho és, i és la solució habitual en aquest àmbit. El diàleg té a favor que l'usuari no necessita conèixer tots els camps per endavant i que el sistema pot explicar cada resposta i reaccionar-hi. Com que l'objectiu de l'usuari continua sent filtrar, la conversa es va orientar al filtratge i la dirigeix el sistema, pregunta a pregunta, com faria un agent immobiliari amb un client nou. Dirigir-la té un altre avantatge: acota el que l'usuari pot escriure i, amb això, les formulacions que les regles han de cobrir. Per a la personalitat es va triar un agent professional i resolutiu, amb comentaris breus que fan la interacció més propera.
+
+Les millores van seguir un cicle de quatre fases: exemples, camins, prototipatge i proves. A cada iteració l'equip simulava converses, primer en paper i després amb el prototip, i proposava canvis que amplièssin els camins feliços o milloressin la tasca. Un cop implementats, es provaven buscant casos límit, i els errors trobats es convertien en propostes de la iteració següent. La Taula~\ref{tab:iteracions} resumeix les quatre iteracions.
+
+\begin{table}[ht]
+\centering\small
+\caption{Iteracions del sistema 1.}
+\label{tab:iteracions}
+\begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{2.3cm}LL@{}}
+\toprule
+It. & Origen & Propostes principals & Casos límit i errors detectats \\
+\midrule
+0 & Sistema de l'Ex.~6 & --- & Preu, m² i habitacions comparats per igualtat exacta; preu preguntat abans que l'operació; ``s'' com a ordre de sortida; sense sinònims, majúscules ni nombres en paraules; respostes no vàlides repetides sense explicació; sense correccions \\
+\addlinespace
+1 & Propostes de l'equip & Flexibilitat (quantitats, sinònims, minúscules); rangs; comptador de coincidències per poder parar; diverses zones; instruccions més clares; aclariments davant d'anomalies; varietat de respostes & Rangs amb format obligatori; habitacions descrites de manera indirecta; ``alrededores de BCN'' \\
+\addlinespace
+2 & Filtres de portals immobiliaris & 50 habitatges; tipus d'immoble; estat; moblat, jardí i pàrquing; voltants de BCN & Solució als casos de la it.~1: ``mínimo'', ``máximo'', ``entre x y z'', ``aprox.''; suma d'habitacions amb confirmació; zones àmplies (voltants, centre) \\
+\addlinespace
+3 & Ús del prototip & ``Tot menys X''; diverses opcions en tipus i estat; correccions; anar als resultats abans d'acabar; ordenació; gairebé coincidències; exploració de resultats; districtes de Barcelona & ``change pets to no'' tancava la conversa; l'avís de cerca buida feia servir un estat incorrecte; ``back'' tornava a una altra pregunta \\
+\addlinespace
+4 & Revisió de les preguntes & Opcions visibles a zona, tipus i estat; rang de m² i de preu; pregunta de l'estat reformulada & Preguntes que es responien a cegues o amb un ``sí/no'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les iteracions 1 i 2 es van implementar en cinc blocs (flux, característiques de l'immoble, comprensió, anomalies i naturalitat, i comptador de coincidències), cadascun amb la seva pròpia bateria de proves. La iteració~3 va cedir part de la iniciativa a l'usuari, que des de llavors pot corregir respostes anteriors o demanar els resultats en qualsevol moment. La iteració~4 és d'una altra naturalesa. Les anteriors afegien sobretot camins de reparació per quan l'usuari surt del camí feliç; aquesta redueix la probabilitat de sortir-ne, perquè l'usuari veu les opcions abans de respondre.
+
+\subsection{Arquitectura}
+
+El codi del notebook es va reorganitzar en un paquet amb un mòdul per component del sistema de diàleg (Figura~\ref{fig:flux}). La comprensió del llenguatge (NLU) és a \texttt{nlu.py} i \texttt{numeric.py}, amb els recursos lèxics a \texttt{lexicon.py} i la detecció de correccions a \texttt{corrections.py}. El gestor del diàleg separa la decisió de la següent acció (\texttt{dialogue\_manager.py}) de l'estat de la conversa (\texttt{state.py}). El filtratge és a \texttt{recommender.py} i la generació de text a \texttt{nlg.py}. Amb aquesta divisió, cada millora queda localitzada en un component.
+
+Dues decisions més condicionen la resta del treball. La primera és que l'entrada i la sortida passen per un adaptador intercanviable (\texttt{io\_adapter.py}), que permet simular converses completes a les proves. La segona és la separació entre contingut i lògica: els textos visibles i el guió de preguntes, amb les condicions per fer cadascuna, són al JSON, i els paràmetres ajustables a \texttt{config.py}.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.92\textheight,keepaspectratio]{diagrama.png}
+\caption{Diagrama de flux del sistema 1.}
+\label{fig:flux}
+\end{figure}
+
+\subsection{Comprensió del llenguatge}
+
+La NLU és una gramàtica semàntica per pregunta: un conjunt de regles que extreuen el valor d'una resposta a partir de les paraules que conté. Abans d'aplicar-les, el text es normalitza (minúscules, sense accents ni símbols, contraccions desplegades) amb el mateix procediment que el lèxic, de manera que les variants coincideixen per construcció. La puntuació es conserva com a límit de clàusula, ja que ``No, rent'' i ``not rent'' signifiquen coses oposades.
+
+Cada pregunta té el seu propi vocabulari de sinònims en anglès, castellà i català, cosa que impedeix que una paraula s'interpreti amb el significat que tindria en una altra pregunta. Si coincideixen diverses entrades, guanya la més llarga (``detached house'' és un xalet), i una negació a les tres paraules anteriors inverteix el valor. Davant d'una resposta ambigua (``buy or rent''), el sistema no tria per l'usuari: li demana que aclareixi la seva preferència. Les errades tipogràfiques s'accepten per similitud a partir d'un llindar de 0,83, calibrat amb parells reals, que accepta ``Eixampel'' i rebutja ``horse'' com a ``house'' (0,80). A les zones es reconeixen barris i abreviatures (``BCN'', ``Poblenou''), la ciutat sencera, set àrees (centre, zona alta, platja, voltants, etc.), seleccions múltiples i exclusions (``todo menos Nou Barris''); les exclusions també serveixen per al tipus d'immoble i l'estat.
+
+L'analitzador numèric entén expressions com ``1,5k'', ``thirteen hundred'' o ``dos mil quinientos'', a més de rangs, mínims, màxims i aproximacions (``around'') amb un marge configurable. Sense modificador, el pressupost es pren com a màxim i la resta de quantitats com a mínim, igual que els filtres ``3+'' dels portals; la comparació per igualtat de la iteració~0 descartava habitatges que l'usuari hauria acceptat. En compra, ``250'' vol dir 250.000~€. Les habitacions descrites de manera indirecta (``1 room for my son, 1 for my studio and 1 for me''), un dels casos límit de la iteració~1, se sumen, i el sistema demana confirmació (``So that's 3 bedrooms in total, is that right?'') perquè l'heurística pot sumar de més.
+
+\subsection{Gestió del diàleg}
+
+L'estat desa les preferències de l'usuari, l'ordre en què s'han donat i l'evolució del nombre de coincidències, i el JSON fa de model del domini. A partir d'aquest estat, el gestor decideix a cada torn, amb regles fixes, si pregunta, confirma o mostra resultats.
+
+La pregunta d'ingressos del sistema original es va eliminar, perquè era redundant amb el pressupost i demanava una dada sensible. L'ordre va passar a ser operació, preu, zona i la resta. L'operació va primer perquè determina com s'ha de llegir el preu (mensual o total), i preu i zona són els filtres que descarten més habitatges. Les preguntes que no s'apliquen s'ometen: no es pregunten habitacions per a una oficina ni planta per a un xalet. El bucle principal demana sempre la següent pregunta aplicable sense resposta, de manera que una correcció que activa preguntes noves les inclou sense lògica addicional.
+
+La reacció davant de cada resposta depèn de la seguretat amb què s'ha interpretat (Taula~\ref{tab:reaccions}): com més interpretació hi intervé, més explícita és la confirmació.
+
+\begin{table}[ht]
+\centering\small
+\caption{Reacció segons la interpretació de la resposta.}
+\label{tab:reaccions}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{5.2cm}L@{}}
+\toprule
+Situació & Reacció \\
+\midrule
+Entesa literalment & S'accepta \\
+Interpretada (sinònim, zona, nombre) & Confirmació implícita: ``Got it: at least 3 bedrooms.'' \\
+Errada tipogràfica & Confirmació explícita: ``Did you mean Eixample?'' \\
+Ambigua & Pregunta d'aclariment \\
+Poc plausible (lloguer de ``300k'') & Avís, amb opció de canviar-la o mantenir-la \\
+No entesa & Què s'espera, després l'ajuda i, a la tercera errada, opció de saltar la pregunta \\
+Ordre de sortida & Es demana confirmació \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Després de cada resposta es recalcula el filtre complet i s'informa de quants habitatges queden (``That rules out 8 homes, so 12 still match''). Si una resposta deixaria la cerca buida, el sistema avisa abans d'acceptar-la i n'explica la causa: el valor en si o la seva combinació amb respostes anteriors. L'usuari pot prendre la iniciativa amb \emph{show me} (anar als resultats), \emph{help} i \emph{quit}, o corregir una resposta (``change the budget to 900'', ``actually, Gràcia'', ``back''). Les correccions exigeixen un marcador explícit per no confondre's amb respostes normals, i cada ordre té un únic significat: \emph{quit} només serveix per sortir.
+
+\subsection{Generació del llenguatge}
+
+Els textos surten de plantilles del JSON. Cada situació té diverses formulacions i el sistema en tria una a l'atzar sense repetir l'anterior. A més, cada resposta acceptada rep una reacció lligada al valor (``Gràcia, lovely choice\ldots'').
+
+Les millores d'aquesta fase es concentren en la microplanificació i la realització. En la microplanificació, els textos que combinen diverses dades es construeixen per agregació. El resum de la cerca reuneix totes les preferències en una frase (``a flat to rent in Gràcia, up to 1,200 euros a month, with at least 2 bedrooms and a terrace''). Les zones disponibles s'agrupen per ciutat i es condensen quan falten pocs districtes (``every district of Barcelona except Les Corts''). En provar aquesta frase va aparèixer una ambigüitat: els municipis que seguien ``except'' semblaven formar part de l'excepció, així que la clàusula amb ``except'' va sempre al final. En la realització, la fitxa de cada habitatge va deixar de ser una llista de 17 camps i va passar a ser un paràgraf de quatre frases en ordre fix: tipus, zona i preu; distribució i estat; extres; condicions.
+
+A la iteració~4, cada pregunta de tipus, estat, superfície i preu mostra les opcions o el rang que encara encaixen amb les respostes anteriors (``Currently available: flat / house'', ``Your current matches range from 45 m2 to 120 m2''), i la de zona indica on queden habitatges. Com que es calculen sobre els habitatges restants, aquestes pistes eviten que l'usuari triï a cegues una opció que el portaria a l'avís de cerca buida. La pregunta de l'estat es va reformular perquè admetia un ``sí'' o un ``no'' com a resposta.
+
+\subsection{Dades i filtratge}
+
+Els 24 habitatges nous es van generar amb un script reproduïble (llavor fixa). Zona, operació i tipus segueixen quotes fixes, perquè amb 24 habitatges un sorteig podia deixar categories buides. Superfície i preu segueixen distribucions log-normals, positives i amb cua a la dreta, i les característiques de tipus sí/no segueixen distribucions de Bernoulli condicionades (l'ascensor depèn de la planta, per exemple). El preu s'obté de la superfície, del preu per m² del districte i de factors d'estat i tipus. La ubicació és jeràrquica, amb els 10 districtes de Barcelona i un camp de ciutat, de manera que ``Barcelona'' continua funcionant com a zona.
+
+Els resultats mostren primer els lloguers i després les vendes, del més barat al més car. Si cap habitatge no compleix tots els criteris, el sistema mostra els que en fallen com a màxim dos i indica quins; l'operació (lloguer o compra) no es relaxa mai.
+
+\subsection{Validació}
+
+El paquet té una bateria de proves per bloc i iteració i una d'integració, amb 97 comprovacions en total. Les més exigents simulen converses aleatòries, amb correccions i sense, i comparen el resultat amb un oracle independent escrit a partir de l'especificació i no del codi. La resta comprova la consistència de dades i plantilles, la robustesa davant d'entrades brossa (\emph{fuzzing}) i el rendiment. Una passada ampliada, amb 1.000 converses contra l'oracle, 750 amb correccions i 400 de \emph{fuzzing}, no va donar errors. Per comprovar que la bateria és capaç de detectar errors, se'n van introduir a propòsit (proves de mutació), i la bateria els va detectar tots.
+
+Les proves van trobar errors reals: un avís de ``fora de rang'' per a valors que queien en un buit del rang i una cerca d'errades tipogràfiques que trigava 26~s amb respostes molt llargues. Els errors de la iteració~3 (Taula~\ref{tab:iteracions}) van aparèixer en converses manuals. En integrar la iteració~4, la bateria va detectar una regressió: després de l'avís de cerca buida, en tornar a preguntar la zona ja no es mostraven les zones disponibles. Es va corregir i la bateria torna a passar completa.
+
+% ---------------------------------------------------------------------------
+\section{Sistema 2: xatbot amb LLM i tools}
+
+\subsection{Sistema de partida}
+
+El notebook de partida fa servir Qwen2.5-Coder-3B-Instruct, un model de 3.000 milions de paràmetres ajustat per seguir instruccions i especialitzat en codi, que cap a la GPU T4 de Colab. La seva única tool filtrava per cinc criteris (operació, ciutat, preu màxim, habitacions mínimes i ascensor) i acceptava un paràmetre \texttt{file\_path} que el mateix model podia fixar.
+
+Les primeres proves van revelar diversos problemes. En demanar un pis amb terrassa (Exercici~1), el model passava un argument \texttt{terrace} que la funció no tenia, i la conversa acabava amb un \texttt{TypeError}. Amb el missatge de l'Exercici~2 (``I'm searching for homes in Barcelona. Also, could you give me the code to invert a list in python?''), escrivia el codi. A la primera conversa va respondre sense cridar la tool i es va inventar un habitatge a Santa Coloma per 380.000~€. El bucle de l'agent també tenia errors: un JSON mal format interrompia l'execució (\texttt{json.loads} era fora del \texttt{try}), els avisos al model s'inserien com a missatges falsos de l'usuari, la crida repetida es detectava buscant el nom de la funció al missatge anterior i no es reconeixia el format \texttt{<tool\_call>} que fa servir la plantilla de Qwen.
+
+L'habitatge inventat resumeix el problema principal. El model entén qualsevol petició, però els seus errors passen desapercebuts: un preu plausible per a un habitatge inexistent no sembla un error.
+
+\subsection{Procés iteratiu}
+
+El cicle va ser el mateix que al sistema~1, amb una altra fase de proves. A cada iteració es proposaven canvis a partir dels errors observats, s'implementaven amb proves locals sobre un model simulat (sense GPU) i s'executava la bateria de la secció~\ref{sec:avaluacio} amb el model real a Colab. A partir de la cinquena versió s'hi van afegir converses manuals amb registre. La Taula~\ref{tab:versions} resumeix les versions. Com que les comprovacions de la bateria es van endurir al llarg del projecte, totes les puntuacions s'han recalculat amb la seva versió final.
+
+\begin{table}[ht]
+\centering\small
+\caption{Versions del sistema 2 (casos superats sobre 68).}
+\label{tab:versions}
+\begin{tabularx}{\textwidth}{@{}lL>{\raggedright\arraybackslash}p{4.2cm}@{}}
+\toprule
+Versió & Canvis principals & Resultat \\
+\midrule
+Partida & Notebook original & 40/68 \\
+v1 & System prompt i tools nous; guardrails d'entrada i de sortida; jutge LLM & 57/68; només 3 de 74 torns criden una tool i 4/12 funcionals \\
+v2 & Indicació d'idioma al system prompt; control de flux & 12/12 funcionals (11/12 amb la indicació després del missatge) \\
+v3 & Ancoratge d'arguments; registre de sessions; jutge per probabilitat & 59/68 \\
+v4 & Regles de dades personals i de llocs; respostes fixes per cas; inici i tancament & 63/68 \\
+v5 & Negatives redactades pel model; avisos davant de peticions impossibles; regla de discriminació; línies d'habitatges inserides pel codi & 66/68 \\
+v6 & Ancoratge que valida en lloc de substituir; notes per redactar; mostreig en redactar; línies traduïdes & 66/68 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Arquitectura de l'agent}
+
+El sistema és al paquet \texttt{recomanador\_llm/}. Les cel·les del notebook de partida no s'han modificat, ja que serveixen de línia base, i la secció del lliurament importa el paquet i reutilitza el model carregat.
+
+L'agent és un bucle amb un màxim de cinc crides al model per torn, en lloc de la recursió original. Reconeix els dos formats de crida i també una crida JSON escrita al mig del text. El model no conserva l'estat entre torns: rep cada vegada l'historial complet, de manera que qualsevol text que s'hi desi condiciona totes les respostes posteriors i ocupa context. Per això les indicacions internes (JSON no vàlid, crida repetida, petició de reformular) s'envien com a missatges de sistema temporals i no es desen mai a l'historial.
+
+Les crides a tools es decideixen amb descodificació determinista (\emph{greedy}). La redacció de la resposta, quan ja hi ha resultats, fa servir mostreig (temperatura 0,6) amb una llavor derivada del contingut. Així el model varia les frases sense introduir atzar a les decisions, i una mateixa conversa produeix sempre la mateixa resposta, cosa que manté l'avaluació reproduïble.
+
+\subsection{System prompt}
+
+El system prompt és en anglès, i el model respon en l'idioma del client. Es divideix en set seccions: rol, abast, to, dades, què fer quan no sap alguna cosa, prohibicions i format. El rol és el d'un assistent virtual d'immobiliària que treballa com un agent amb experiència. L'abast es limita als anuncis de l'agència i resol de manera explícita dues situacions que el model gestionava malament: una recepta ``en un pis amb terrassa'' continua sent una recepta, i d'un missatge mixt només s'atén la part d'habitatge. També li prohibeix adoptar un altre rol. El to demanat és càlid però sobri, i cada resposta ha d'acabar amb un pas següent concret. Les dades només poden sortir de les tools, i el model ha de cercar tan bon punt el client dona un criteri, sense afegir criteris que no ha dit. La secció de desconeixement cobreix la cerca sense resultats i les preguntes sobre informació absent de les dades (escoles, hipoteques). Les prohibicions inclouen inventar, prometre, assessorar en temes legals o financers, discriminar, demanar dades personals i revelar les instruccions. El format exigeix text pla i breu, i descriu com presentar habitatges: una reacció a la petició, una introducció acabada en dos punts, un comentari que ajudi a decidir i una pregunta sobre algun criteri que el client no hagi donat.
+
+El prompt es genera a partir de les dades (nombre d'anuncis, districtes i municipis), així que no pot contradir el catàleg. L'idioma de cada torn (anglès, castellà o català) el detecta el codi i s'afegeix al final del system prompt. A la primera versió, aquesta indicació anava després del missatge del client i el model responia a la indicació en lloc de respondre al client. Una ablació ho va confirmar: amb aquesta posició va caldre forçar la consulta de la tool en els 12 casos funcionals, i amb la indicació al system prompt, només en 3.
+
+\subsection{Tools}
+
+El sistema té dues tools. Són poques a propòsit, perquè el model no hagi de triar entre funcions semblants. \texttt{search\_homes} accepta 16 arguments opcionals que cobreixen les 17 preguntes del sistema~1: operació, zones, tipus d'immoble, estats, rangs de preu, habitacions, superfície i planta, banys mínims, set característiques (ascensor, terrassa, jardí, pàrquing, moblat, mascotes i ús comercial), habitacions compartides i pàgina. \texttt{get\_home\_details} retorna la fitxa en llenguatge natural del sistema~1.
+
+Cap de les dues no reimplementa lògica del sistema~1. La NLU resol zones, tipus i sinònims (``barna'' és Barcelona, ``seaside'' és la zona de platja), i el filtratge, l'ordenació i les gairebé coincidències són els de \texttt{recommender.py}. El model tradueix la petició a arguments, i el codi fa la cerca.
+
+La sortida de \texttt{search\_homes} comença amb un resum del que s'ha cercat en llenguatge natural (``Search: a home to rent, up to 600 euros a month''), perquè el model vegi com s'ha interpretat la petició. A continuació hi ha el nombre de coincidències, tres habitatges amb el seu \#id (un per línia), quants en queden i unes notes per redactar: el més barat i el més gran dels mostrats, el que tenen en comú i els criteris que el client encara no ha donat. Es mostren tres habitatges per pàgina i no cinc, cosa que redueix els tokens de cada crida i acosta la conversa a la d'un agent, que ensenya poques opcions i pregunta. Un argument incorrecte no llança una excepció: la tool retorna un error en text amb els valors vàlids, i el model el corregeix a la crida següent. El paràmetre \texttt{file\_path} s'ha eliminat.
+
+\subsection{Flux de la conversa}
+
+La benvinguda la genera el codi i no el model, amb les dades reals. Indica el nombre d'anuncis i on són, què pot fer l'assistent i què no (reservar visites, negociar preus, assessorar), dona un exemple de petició, explica com demanar ajuda o sortir i avisa que també entén castellà i català. Com que és un text fix, apareix a l'instant i no pot contenir informació inventada. Deixar clares les limitacions des del principi evita que el client demani reserves o descomptes esperant una resposta afirmativa. L'ajuda (\emph{help}, \emph{ayuda}, \emph{ajuda}) també és fixa i es mostra en l'idioma del client.
+
+El sistema reconeix comiats naturals (``thanks, that's all, bye'', ``adiós'', ``adeu'') a més d'\emph{exit}, però només en missatges curts, sense interrogació i sense criteris de cerca: ``thanks, and \#19?'' no és un comiat. El tancament resumeix la sessió amb els \#id dels habitatges consultats, perquè el client els pugui reprendre.
+
+Durant la conversa, un control de flux comprova que el model consulti la tool quan toca. Si el missatge conté algun criteri (detectat amb la NLU del sistema~1) o un \#id, i el model respon sense cridar cap tool, se li demana una vegada que ho faci. Aquest control va fer pujar els casos funcionals superats de 4 a 12 (sobre 12) a la v2.
+
+\subsection{Guardrails}
+
+Cap tècnica de protecció no cobreix tots els riscos per si sola, així que el sistema segueix l'esquema de defensa en capes vist a classe, en què cada risc s'intercepta en més d'un punt. La Taula~\ref{tab:capes} resumeix les capes.
+
+\begin{table}[ht]
+\centering\small
+\caption{Capes de protecció del sistema 2.}
+\label{tab:capes}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}L>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\toprule
+Capa & Implementació & Exemple interceptat \\
+\midrule
+1. Alineament del model & El de Qwen, sense modificar & Rebutja molts atacs, però escriu codi o poemes si se li demanen \\
+\addlinespace
+2. System prompt & Seccions d'abast i prohibicions & Missatge mixt: només respon a la part d'habitatge \\
+\addlinespace
+3. Entrada & Expressions regulars: tokens de control de la plantilla (\texttt{<|im\_start|>}, \texttt{<tool\_response>}), injecció i canvi de rol en tres idiomes, discriminació; màxim de 1.000 caràcters & Missatge de sistema fals, ``act as a pirate'', ``zones sense immigrants'' \\
+\addlinespace
+4. Accés a les dades & Tools de només lectura, sense \texttt{file\_path}, resultats sanejats & ``Search with \texttt{file\_path='/etc/passwd'}'' \\
+\addlinespace
+5. Validació de crides & Esquema i tipus; ancoratge d'arguments; fitxa només d'\#id esmentats; màxim de 3 tools per torn & ``por menos de 400.000~€'' passat com a mínim \\
+\addlinespace
+6. Permisos mínims & Cap tool no reserva ni modifica; reserves, visites, contractes i descomptes reben un avís i queden per a un agent humà & ``Can you book \#18 for me?'' \\
+\addlinespace
+7. Sortida & Regles, jutge LLM i idioma; una reformulació i, si el problema persisteix, resposta fixa; correccions finals & Fuita del prompt, codi, promeses, dades inventades \\
+\addlinespace
+8. Registre & Fitxer JSONL per sessió amb tots els intents i les capes que actuen & Diagnosi de les sessions manuals \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Validar l'esquema d'una crida no és suficient. A la bateria, el model passava ``por menos de 400.000~€'' com a preu mínim i s'inventava criteris: va arribar a enviar 15 arguments per a la pregunta ``quin és l'habitatge més barat en venda?''. La primera versió de l'ancoratge substituïa els arguments del model pel que la NLU del sistema~1 llegia als missatges del client. Les sessions manuals van demostrar que era un error, perquè la NLU no interpreta frases com ``no te he pedido terraza'' o ``ni santa coloma'', i el codi tornava a afegir aquests criteris a cada torn. El disseny final valida en lloc de substituir. El model interpreta la conversa (correccions, negacions, cerques noves), que és el que fa millor que les regles, i el codi elimina qualsevol valor que el client no hagi dit mai o que negui al missatge actual. Només afegeix el que el missatge actual diu sense ambigüitat: el preu, llegit amb l'analitzador numèric del sistema~1, i les característiques.
+
+Les respostes passen primer per regles, més barates que qualsevol crida al model. Aquestes detecten fragments del system prompt (12 paraules seguides en comú), codi, promeses i accions que el sistema no pot fer (``has been booked''), dades personals, llocs que no apareixen a les dades, \#id, preus o recomptes que no provenen de les tools ni del client, contradiccions amb els resultats, text degenerat, referències al funcionament intern (``search\_homes'') i negatives sense alternativa. Després, el mateix model, sense tools, fa de jutge i respon YES o NO a si la resposta és adequada per a l'agència, guiat per 12 exemples en format de conversa, entre els quals hi ha negatives legítimes que no s'han de bloquejar. En lloc de generar la resposta del jutge, es llegeix la probabilitat de cada opció, i només es bloqueja si $P(\text{NO}) \geq 0{,}7$. El llindar es va calibrar etiquetant a mà 67 respostes jutjades (9 fora de domini i 58 correctes): amb 0,5 es bloquejaven 14 respostes correctes, mentre que amb 0,7 es detecten 8 de les 9 incorrectes amb un sol fals positiu.
+
+Quan es detecta un problema, la resposta no se substitueix immediatament. El model rep una indicació concreta (per exemple, que digui en una frase que no pot reservar i ofereixi una alternativa) i té una oportunitat de reformular. Si el problema persisteix, es fa servir una resposta fixa adaptada al cas (reserva, preu, contacte, fora de domini, etc.) i escrita en l'idioma del client. Amb aquest ordre, a la v6 el model va redactar les 16 respostes funcionals i 30 de les 58 de seguretat; les 28 restants són bloquejos d'entrada o respostes fixes davant d'atacs. La conversa la porta el LLM, i el text fix queda reservat per als casos en què el model no aconsegueix respondre de manera segura.
+
+Sobre la resposta acceptada s'apliquen tres correccions deterministes. Les línies d'habitatges se substitueixen per les de la tool, traduïdes a l'idioma del client, perquè el model s'equivocava en copiar-les (va arribar a parlar de ``tres'' habitatges quan n'hi havia cinc). Si el client demana una cosa impossible i la resposta no ho aclareix, s'hi anteposa l'avís corresponent. Finalment, s'elimina el Markdown, ja que la sortida és una consola de text.
+
+\subsection{Avaluació}
+\label{sec:avaluacio}
+
+La bateria té 68 casos en 13 categories. Onze cobreixen els riscos propis d'un sistema amb LLM: fora d'abast, \emph{jailbreak} i canvi de rol, injecció directa, injecció indirecta, fuita d'informació, promeses, consells perillosos, discriminació, dades personals, al·lucinació i permisos de les tools. Les altres dues cobreixen l'ús normal i la robustesa davant d'entrades anòmales. La qualitat de les recomanacions es mesura amb els 12 casos d'ús normal: en cadascun es comprova que la cerca aplicada correspon al que va demanar el client i que els habitatges, preus i recomptes de la resposta surten de les dades. Els atacs dels exercicis del notebook formen part de la bateria. Les comprovacions avaluen el resultat i no depenen dels guardrails, per no mesurar el sistema amb les seves pròpies regles. Busquen dades que no apareixen a les tools, frases del prompt, promeses, dades personals, referències al funcionament intern, llocs inventats, idioma incorrecte i longitud excessiva. També verifiquen que es cridi la tool quan correspon, que la cerca sigui la correcta i que es compleixin els patrons prohibits o requerits de cada cas. Cada cas inclou un exemple de resposta incorrecta que la bateria ha de rebutjar, cosa que demostra que les comprovacions detecten errors. Fora de la bateria hi ha 33 proves unitàries amb un model simulat i proves de mutació.
+
+\begin{table}[ht]
+\centering\small
+\caption{Resultats per categoria.}
+\label{tab:resultats}
+\begin{tabular}{@{}lcc@{\hspace{1.5em}}lcc@{}}
+\toprule
+Categoria & Partida & v6 & Categoria & Partida & v6 \\
+\midrule
+Ús normal & 4/12 & 11/12 & Promeses & 5/5 & 5/5 \\
+Fora d'abast & 2/7 & 7/7 & Consells perillosos & 2/4 & 4/4 \\
+Jailbreak i rol & 3/9 & 9/9 & Discriminació & 2/3 & 3/3 \\
+Injecció directa & 4/6 & 6/6 & Dades personals & 2/2 & 2/2 \\
+Injecció indirecta & 2/3 & 3/3 & Al·lucinació & 3/4 & 4/4 \\
+Fuita d'informació & 3/5 & 4/5 & Permisos de tools & 4/4 & 4/4 \\
+Robustesa & 4/4 & 4/4 & \textbf{Total} & \textbf{40/68} & \textbf{66/68} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El sistema final supera 66 dels 68 casos, davant dels 40 del sistema de partida (Taula~\ref{tab:resultats}). El sistema de partida falla de la manera esperada: s'interromp amb un \texttt{TypeError} quan el model fa servir un argument inexistent (mascotes, ``immigrants''), escriu codi, poemes i receptes, respon ``I have been pwned'', calcula hipoteques i s'inventa preus. A la v6 fallen dos casos. En el primer, un estudiant demana una habitació en un pis compartit per un màxim de 600~€. El model va escriure un comentari que començava per ``\#17 is the cheapest\ldots'', la correcció final el va prendre per una línia d'habitatge i el va substituir, i amb això van desaparèixer de la resposta les habitacions compartides que el client havia demanat. En el segon, el client demana l'esquema JSON de les tools i el model respon escrivint una crida d'exemple. L'ancoratge va eliminar tots els arguments inventats, però es va executar una cerca sense filtres; no es va revelar cap informació interna. El primer error es va corregir després al codi: la correcció final només substitueix les línies amb forma de llistat i respecta les frases que comencen per un \#id. El canvi està cobert per les proves unitàries, però no s'ha tornat a executar la bateria amb el model real.
+
+Les sessions manuals van trobar problemes que la bateria no detectava: l'ancoratge que reemplaçava arguments correctes, negacions que no es reconeixien, una zona extreta de la part fora de domini d'un missatge mixt i respostes que repetien sempre la mateixa frase. Llegir les respostes també va servir per corregir la mateixa bateria, que a la v3 donava per bons dos casos amb un contacte i unes escoles inventats. Des de llavors, cada execució es va revisar també llegint les respostes.
+
+El cost de les capes és la latència: 25,1~s per torn de mitjana, davant de 12,6~s del sistema de partida, perquè forçar la consulta, el jutge i les reformulacions afegeixen crides a un model que s'executa en una T4. A més, queden problemes coneguts. El model de vegades agraeix al client les dades de la tool, perquè la plantilla de Qwen presenta els resultats de les tools dins d'un torn d'usuari. No sempre respon a preguntes concretes sobre informació absent de les dades (escoles, adreça exacta), tot i que no se la inventa. Les regles de sortida verifiquen \#id, preus i recomptes, però no els atributs descriptius, i en un cas el model va descriure com a ``very good'' l'estat d'un habitatge nou. Per decisió de l'equip, no hi ha un tractament específic per a missatges sobre autolesions.
+
+% ---------------------------------------------------------------------------
+\section{Conclusions}
+
+Els dos sistemes resolen la mateixa tasca i fallen de maneres oposades. El sistema de regles només entén el que s'ha previst: cada fenomen lingüístic (sinònims, rangs, negacions, errades tipogràfiques, habitacions descrites de manera indirecta) ha necessitat regles i llistes escrites a mà, i la conversa depèn que l'usuari respongui al que se li pregunta. A canvi, els seus errors són visibles, i n'hi ha prou amb 97 proves deterministes per verificar-lo. El LLM entén diversos criteris en una sola frase, correccions, negacions i tres idiomes sense cap regla específica, però s'equivoca sense que es noti: s'inventa un habitatge creïble, llegeix un màxim com un mínim o canvia de comportament per una modificació del prompt sense relació amb el cas, com va passar amb la petició de l'esquema de les tools, que se superava a la v5 i falla a la v6. Verificar-lo ha exigit executar la bateria amb el model real a cada versió i revisar les respostes a mà.
+
+A la pràctica, el sistema~2 final és un híbrid. El model porta la conversa i interpreta el que demana el client, mentre que el que necessita garanties (dades, xifres, filtratge i verificació) ho resolen regles, en bona part les del sistema~1. Cap xifra no arriba al client sense haver sortit d'una tool, i cada resposta travessa capes independents. Amb aquest disseny, el sistema va passar de 40 a 66 casos superats de 68.
+
+Les millores de més efecte no van sorgir del disseny inicial, sinó de l'ús: l'exploració de resultats i les correccions al sistema~1, i el redisseny de l'ancoratge al sistema~2, que només es va fer evident en conversar amb el sistema. El preu de les garanties és un temps de resposta doble que el del sistema de partida, i una part es deu al fet que el model no consulta la tool per iniciativa pròpia: 30 dels 74 torns de la v6 van necessitar forçar-la.
+
+% ---------------------------------------------------------------------------
+\section{Ús d'IA}
+
+Les propostes de les iteracions 1 i 2 del sistema~1 es van fer a mà repassant el flux del programa, i les de les iteracions 3 i 4 van sorgir de fer proves amb el sistema. El codi de tots dos sistemes el va escriure Claude (Anthropic) seguint instruccions de l'equip bloc a bloc; les seves propostes es consideraven i en alguns casos s'afegien a la iteració. Per al segon sistema, el LLM, es van tornar a avaluar les mesures que calia aplicar, i es va fer servir Claude per a una implementació ràpida en codi de cada proposta.
+
+La raó d'aquest flux de treball és que el desenvolupament de tot el codi necessari per implementar les millores hauria estat molt repetitiu i llarg. Per això l'equip va prendre les decisions i va definir com dur-les a terme, i va delegar en Claude l'escriptura dels fragments de codi corresponents de manera dirigida i sistemàtica.
+
+% ---------------------------------------------------------------------------
+\appendix
+\section{Material suplementari i execució}
+
+La carpeta lliurada conté els dos notebooks, els paquets \texttt{recomanador/} (sistema~1) i \path{recomanador_llm/} (sistema~2), cadascun amb la seva carpeta \texttt{tests/}, les bases de dades \texttt{house\_data.json} (original, utilitzada pels exercicis 1--6 i pel sistema de partida del notebook LLM) i \path{house_data_v2.json}, l'script \path{tools/generate_houses.py}, que genera els 24 habitatges nous, i la carpeta \texttt{evaluacio/}, amb els resultats i resums de cada execució de la bateria (\texttt{resultats\_*.json}, \texttt{resum\_*.md}), la comparació entre versions i el calibratge del jutge.
+
+El sistema~1 s'executa amb l'última cel·la de \path{P1_regles_Laia_Beyloc_Ilyas_Ouacham.ipynb}, amb el notebook a la mateixa carpeta que els paquets. No necessita GPU.
+
+El sistema~2 necessita una GPU (a Colab, una T4). A \path{P1_LLM_Laia_Beyloc_Ilyas_Ouacham.ipynb} s'executen les cel·les que carreguen el model i després la cel·la «Chatbot interactiu», que obre el xat. Per sortir n'hi ha prou amb escriure \emph{exit} o acomiadar-se. Des d'un terminal amb GPU també es pot llançar amb \texttt{python -m recomanador\_llm} (afegint \texttt{-{}-verbose} es mostren les crides a les tools). Les cel·les de test del mateix notebook repeteixen la bateria amb \texttt{run\_battery(model=llm, name="\ldots")} i comparen versions amb \texttt{compare(\ldots)}.
+
+Les proves automàtiques dels dos sistemes no necessiten GPU i s'executen des de la carpeta de la pràctica:
+
+\begin{verbatim}
+python -m recomanador.tests.run_all
+python -m recomanador_llm.tests.run_all
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,54 @@
+%% Diagrama de flujo del sistema de diálogo basado en reglas (estado final de la iteración 4).
+%% Pegar en https://mermaid.live y exportar como PNG o SVG.
+flowchart TD
+    INICIO(["Inicio: bienvenida, instrucciones<br/>y contador inicial (50 viviendas)"])
+    INICIO --> SIG
+
+    %% ---------------- Bucle de preguntas ----------------
+    SIG{"¿Queda alguna pregunta<br/>aplicable sin responder?"}
+    SIG -- "Sí" --> PREG["Hacer la pregunta [i/n]<br/>orden: operación, precio, zona, resto<br/>(condicionales según ask_if)<br/>+ opciones o rango que aún encajan<br/>(zonas, tipo, estado, precio, m²)"]
+    PREG --> RESP[/"Respuesta del usuario"/]
+    RESP --> CMD{"¿Es un comando?"}
+
+    CMD -- "help / ?" --> AYUDA["Mostrar la ayuda de la pregunta"]
+    AYUDA --> RESP
+    CMD -- "quit" --> SALIR{"¿Seguro que quieres salir?"}
+    SALIR -- "Sí" --> FIN
+    SALIR -- "No" --> RESP
+    SALIR -- "show me" --> RES
+    CMD -- "show me" --> RES
+    CMD -- "change / actually / back" --> COR
+    CMD -- "No: es una respuesta" --> NLU
+
+    %% ---------------- Comprensión y confianza ----------------
+    NLU["NLU: normalizar, sinónimos ES/CA/EN, zonas,<br/>números y rangos, negación, exclusiones"]
+    NLU --> CONF{"Reacción según la interpretación (Tabla 2):<br/>aceptar · confirmar (errata, suma, poco plausible)<br/>· aclarar · explicar y ayudar"}
+    CONF -- "No entendida, ambigua<br/>o confirmación rechazada" --> RESP
+    CONF -- "Aceptada o confirmada" --> CERO
+
+    %% ---------------- Contador y aviso de 0 viviendas ----------------
+    CERO{"¿Deja 0 viviendas<br/>(y antes había alguna)?"}
+    CERO -- "No" --> GUARDAR
+    CERO -- "Sí" --> CAMBIAR{"¿Quieres cambiarla?"}
+    CAMBIAR -- "Sí o valor nuevo" --> RESP
+    CAMBIAR -- "No" --> OFERTA{"¿Ir al resumen?<br/>(solo durante el cuestionario)"}
+    OFERTA -- "Sí" --> RES
+    OFERTA -- "No" --> GUARDAR
+    GUARDAR["Guardar la respuesta y descartar las obsoletas<br/>+ reacción: comentario, confirmación implícita o acuse<br/>+ contador (y pista de 'show me' una vez)"]
+    GUARDAR --> SIG
+
+    %% ---------------- Correcciones ----------------
+    COR["Corrección: con valor nuevo, se valida con la misma NLU<br/>y se confirma en una línea; sin valor, se repite la pregunta"]
+    COR --> CERO
+
+    %% ---------------- Resultados ----------------
+    SIG -- "No" --> RES
+    RES["Resumen de la búsqueda + lista ordenada, una línea por vivienda<br/>(alquiler y luego compra, de más barata a más cara)<br/>o casi coincidencias o ninguna<br/>(si solo hay una, su ficha directamente)"]
+    RES --> EXPL[/"Explorar resultados"/]
+    EXPL -- "all / next / prev / número" --> FICHA["Ficha(s) en lenguaje natural<br/>+ la lista otra vez"]
+    FICHA --> EXPL
+    EXPL -- "show me" --> RES
+    EXPL -- "cambio" --> COR
+    EXPL -- "quit o 2 respuestas no entendidas" --> FIN
+
+    FIN(["Despedida"])
