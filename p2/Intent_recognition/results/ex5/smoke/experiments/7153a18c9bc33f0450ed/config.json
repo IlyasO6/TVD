@@ -1,0 +1,57 @@
+{
+  "implementation": "1.0-2d3a22c9a009",
+  "dataset": "951c38e40f4ac828a481d800d32289ceac6845e46903eccdb12dd5837724ebf5",
+  "config": {
+    "name": "smoke_weighted",
+    "phase": "smoke",
+    "preprocessing": {
+      "vocab_size": 500,
+      "lowercase": true,
+      "stemming": false,
+      "max_sequence_length": null
+    },
+    "model": {
+      "family": "feedforward",
+      "embedding_dim": 8,
+      "hidden_dim": 8,
+      "dropout": 0.0,
+      "filters": 64,
+      "kernel_size": 3,
+      "pooling": "max",
+      "conv_layers": 1,
+      "rnn_type": "LSTM",
+      "bidirectional": false,
+      "num_layers": 1,
+      "attention": false
+    },
+    "training": {
+      "learning_rate": 0.001,
+      "batch_size": 32,
+      "max_epochs": 2,
+      "patience": 1,
+      "min_delta": 0.0,
+      "seed": 42,
+      "device": "cpu",
+      "deterministic": true,
+      "cpu_threads": 2,
+      "mode": "smoke",
+      "smoke_train_size": 96,
+      "smoke_val_size": 48
+    },
+    "class_weights": true
+  },
+  "environment": {
+    "python": "3.13.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "torch": "2.12.1",
+      "numpy": "2.2.4",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.7.2",
+      "nltk": "3.9.2"
+    },
+    "cuda_available": false,
+    "cuda_version": null,
+    "gpu": null
+  }
+}

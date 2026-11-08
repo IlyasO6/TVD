@@ -1,0 +1,76 @@
+{
+  "status": "passed",
+  "mode": "smoke",
+  "checks": [
+    "14 architectures: finite forward/backward, correct logits, PAD gradient zero and padding invariance.",
+    "Negative embeddings cannot be replaced by artificial padding maxima.",
+    "Empty input, UNK=1, PAD=0, reserved indices and real lengths checked.",
+    "Weighted CE numerators/denominators and class-index ordering checked.",
+    "Early stopping restores epoch-1 weights in a controlled real run; evaluation leaves parameters unchanged.",
+    "Two independent CPU trainings with seed 42 produce identical histories and checkpoints.",
+    "Real smoke runs saved/reloaded/resumed, no-op configuration reused without retraining, checkpoint loaded, real plots exported, actual test sealed throughout."
+  ],
+  "environment": {
+    "python": "3.13.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "torch": "2.12.1",
+      "numpy": "2.2.4",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.7.2",
+      "nltk": "3.9.2"
+    },
+    "cuda_available": false,
+    "cuda_version": null,
+    "gpu": null
+  },
+  "architecture_variants": 14,
+  "examples": {
+    "train": 96,
+    "val": 48
+  },
+  "experiment_ids": [
+    "dffdf900814c64f9b571",
+    "886305fc93b45367d13d",
+    "dbfb74b0c81981982747",
+    "a2c9c36810ebfad227b9"
+  ],
+  "materials": {
+    "comparison_table": "results/ex5/smoke/tables/comparison_7a5c235fcafe3872.csv",
+    "best_models": "results/ex5/smoke/tables/best_comparison_7a5c235fcafe3872.csv",
+    "figures": {
+      "vocabulary": null,
+      "embedding": null,
+      "cnn_kernel": null,
+      "recurrent": null,
+      "dropout": null,
+      "class_weights": null,
+      "execution_check": "results/ex5/smoke/figures/execution_check_b22ebc6d06b8abf8.png"
+    },
+    "curves": {
+      "cnn": "results/ex5/smoke/figures/history_886305fc93b45367d13d_9326709fbe678522.png",
+      "feedforward": "results/ex5/smoke/figures/history_dffdf900814c64f9b571_4dd4c44c711c5d96.png",
+      "rnn": "results/ex5/smoke/figures/history_dbfb74b0c81981982747_61f38bbd9cffd19e.png"
+    },
+    "measured_report": "results/ex5/smoke/tables/comparison_7a5c235fcafe3872.md",
+    "weight_plot_checks": {
+      "comparison_table": "results/ex5/smoke/tables/comparison_ec7ae1ba4ddd09d3.csv",
+      "best_models": "results/ex5/smoke/tables/best_comparison_ec7ae1ba4ddd09d3.csv",
+      "figures": {
+        "vocabulary": null,
+        "embedding": null,
+        "cnn_kernel": null,
+        "recurrent": null,
+        "dropout": null,
+        "class_weights": "results/ex5/smoke/figures/class_weights_1ac1666a0573f6e6.png",
+        "per_class_recall": "results/ex5/smoke/figures/per_class_recall_a9516c828358bd0a.png",
+        "execution_check": "results/ex5/smoke/figures/execution_check_a78b210f1b5731fe.png"
+      },
+      "curves": {
+        "feedforward": "results/ex5/smoke/figures/history_dffdf900814c64f9b571_4dd4c44c711c5d96.png"
+      },
+      "measured_report": "results/ex5/smoke/tables/comparison_ec7ae1ba4ddd09d3.md"
+    }
+  },
+  "test_evaluated": false
+}
