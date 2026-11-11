@@ -1,0 +1,4 @@
+p2/parte2/data/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
