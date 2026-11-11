@@ -1,4 +1,6 @@
 p2/parte2/data/
+p2/data/
+p2/*.tar.gz
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
