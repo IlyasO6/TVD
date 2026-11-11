@@ -1,7 +1,0 @@
-{
-  "minority_definition": "train count at/below median, validation support > 0",
-  "frequent_definition": "train count at/above 75th percentile, validation support > 0",
-  "minority_mean_recall_delta": 0.0,
-  "frequent_mean_recall_delta": 0.0,
-  "interpretation": "Positive delta means a measured gain; negative means a measured loss. No inference for classes absent in validation."
-}
