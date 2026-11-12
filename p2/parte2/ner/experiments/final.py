@@ -30,6 +30,9 @@ SECTION = "final"
 FINAL = "model final"
 BASELINE = "baseline"
 FINAL_SEEDS = (0, 1, 2, 3, 4)
+BASELINE_LONG = "baseline (sense min_delta)"
+FINAL_LONG = "model final (sense min_delta)"
+LONG_TRAINING = {"train.min_delta": 0.0, "train.patience": 10, "train.max_epochs": 60}
 Component = Callable[[ExperimentConfig], ExperimentConfig]
 
 
@@ -176,14 +179,25 @@ def ablation_configs(components: dict[str, Component]) -> list[ExperimentConfig]
     return out
 
 
-def significance(results: list[dict[str, Any]]) -> pd.DataFrame:
+def robustness_configs(components: dict[str, Component]) -> list[ExperimentConfig]:
+    """Baseline i model final reentrenats sense min_delta i amb més paciència.
+
+    Amb min_delta = 0.001 el baseline s'atura cap a l'època 13, mentre que a l'Exercici 6 la F1 encara pujava
+    lentament fins a l'època 30. Si el guany del model final vingués només de convergir més a poc a poc (i no
+    ser tallat abans d'hora), desapareixeria en deixar entrenar tots dos models fins al final.
+    """
+    return [baseline().with_(BASELINE_LONG, SECTION, **LONG_TRAINING),
+            compose(components).with_(FINAL_LONG, SECTION, **LONG_TRAINING)]
+
+
+def significance(results: list[dict[str, Any]], base_name: str = BASELINE, final_name: str = FINAL) -> pd.DataFrame:
     """Bootstrap pareat sobre les oracions de test entre baseline i model final, llavor a llavor."""
     data = prepare_data(baseline().data)
     gold = data.splits["test"].gold
     rows = {}
     for seed in sorted({r["seed"] for r in results}):
-        base = next((r for r in results if r["name"] == BASELINE and r["seed"] == seed), None)
-        final = next((r for r in results if r["name"] == FINAL and r["seed"] == seed), None)
+        base = next((r for r in results if r["name"] == base_name and r["seed"] == seed), None)
+        final = next((r for r in results if r["name"] == final_name and r["seed"] == seed), None)
         if base is None or final is None:
             continue
         # El gold es construeix amb l'esquema de cada model; les entitats són les mateixes en tots dos.
@@ -208,10 +222,18 @@ def report(results: list[dict[str, Any]], save_as: str | None = "final_ablacio")
 
 def overview_figure(section_results: dict[str, list[dict[str, Any]]], final_results: list[dict[str, Any]],
                     save_as: str | None = "resum_global") -> tuple[pd.DataFrame, plt.Figure]:
-    """Dot plot resum: millor configuració de cada apartat (per validació), baseline i model final, a test."""
+    """Dot plot resum: millor variant de cada apartat (per validació), baseline i model final, a test.
+
+    La referència de cada apartat (el baseline amb un altre nom) s'exclou: si cap variant la supera, el que es
+    mostra és la millor variant igualment, que queda per sota del baseline i és el resultat honest.
+    """
+    from . import ex7_1, ex7_2, ex7_3, ex7_4, ex7_6, extras
+
+    references = {ex7_1._random(128), ex7_2.BASELINE, ex7_3.BASELINE, ex7_4.BASELINE, ex7_6.BASELINE, extras.BASELINE}
     rows = []
     for section, res in section_results.items():
         s = summarize(res)
+        s = s.drop(index=[n for n in s.index if n in references or n.endswith("sense dropout")])
         best = s["val_entity_f1_mean"].idxmax()
         rows.append(s.loc[[best]].rename(index={best: f"{section}: {best}"}))
     final_summary = summarize(final_results)
