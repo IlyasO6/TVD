@@ -1,0 +1,14 @@
+\section{Introducció}
+\label{sec:intro}
+
+Un sistema de diàleg orientat a tasques necessita dues coses de cada frase de l'usuari: què vol fer (la
+intenció, que treballem a la primera part de la pràctica) i amb quins valors (les entitats). Si algú escriu
+``i want to fly from boston to denver on thursday'', el sistema ha de saber que \etq{boston} és l'origen,
+\etq{denver} la destinació i \etq{thursday} el dia de sortida. Aquesta part tracta el reconeixement d'entitats
+(NER) com un problema d'etiquetatge de seqüències sobre ATIS, un corpus de consultes de reserves de vols: cada
+paraula rep una etiqueta que indica si forma part d'una entitat, de quin tipus és i en quina posició hi cau.
+
+Hem entrenat els models amb xarxes neuronals, sense LLM, i hem estudiat com canvia el rendiment segons la
+representació de les paraules, el tipus d'encoder, la regularització i el tractament del desequilibri entre
+classes. L'informe segueix els exercicis: preparació de dades (1-4), model base (5-6) i estudi experimental (7),
+que acabem amb un model final, una ablació i una anàlisi d'errors.

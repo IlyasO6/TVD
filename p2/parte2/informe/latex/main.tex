@@ -1,0 +1,48 @@
+% Informe de la Pràctica 2, part 2 (NER). Compila amb pdflatex: pdflatex main && pdflatex main
+% El text de cada secció és a sections/*.tex; l'esborrany complet en Markdown és a ../informe.md.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[catalan]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+% microtype i caption milloren la tipografia però no són imprescindibles: si la instal·lació no els té
+% (TinyTeX mínim), el document compila igualment.
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\IfFileExists{caption.sty}{\usepackage{caption}\captionsetup{font=small,labelfont=bf}}{}
+\graphicspath{{figures/}}
+\setlength{\parskip}{0.3em}
+
+% Comandes per mantenir la notació coherent a tot el document.
+\newcommand{\etq}[1]{\texttt{#1}}          % etiquetes i noms d'entitat
+\newcommand{\mindelta}{\texttt{min\_delta}}
+
+\title{Pràctica 2, part 2: reconeixement d'entitats anomenades a ATIS}
+\author{Laia Beyloc \and Ilyas Ouacham\\[2pt]\small Tractament de la Veu i el Diàleg}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\input{sections/01_introduccio}
+\input{sections/02_experiments}
+\input{sections/03_conclusions}
+
+\begin{thebibliography}{9}
+\small
+\bibitem{jurafsky} D.~Jurafsky i J.~H.~Martin. \emph{Speech and Language Processing}, 3a ed. (esborrany), caps.~6, 8, 9 i 17.
+\bibitem{glove} J.~Pennington, R.~Socher i C.~D.~Manning. GloVe: Global Vectors for Word Representation. \emph{EMNLP}, 2014.
+\bibitem{mahovy} X.~Ma i E.~Hovy. End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF. \emph{ACL}, 2016.
+\bibitem{lample} G.~Lample et al. Neural Architectures for Named Entity Recognition. \emph{NAACL}, 2016.
+\bibitem{vaswani} A.~Vaswani et al. Attention Is All You Need. \emph{NeurIPS}, 2017.
+\bibitem{crf} J.~Lafferty, A.~McCallum i F.~Pereira. Conditional Random Fields. \emph{ICML}, 2001.
+\bibitem{zaremba} W.~Zaremba, I.~Sutskever i O.~Vinyals. Recurrent Neural Network Regularization. arXiv:1409.2329, 2014.
+\bibitem{cui} Y.~Cui et al. Class-Balanced Loss Based on Effective Number of Samples. \emph{CVPR}, 2019.
+\end{thebibliography}
+
+\end{document}
