@@ -1,0 +1,16 @@
+p2/parte2/data/
+p2/data/
+p2/*.tar.gz
+p2/Intent_recognition/data/
+p2/Intent_recognition/*.tar.gz
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# auxiliars de LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+p2/Intent_recognition/*.log
+entrega/

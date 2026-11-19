@@ -1,0 +1,42 @@
+% Informe de la Pràctica 2, part 2 (NER). Compila amb pdflatex: pdflatex main && pdflatex main
+% El text de cada secció és a sections/*.tex.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[catalan]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[round,authoryear]{natbib}
+\usepackage[hidelinks]{hyperref}
+% microtype i caption milloren la tipografia però no són imprescindibles: si la instal·lació no els té
+% (TinyTeX mínim), el document compila igualment.
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\IfFileExists{caption.sty}{\usepackage{caption}\captionsetup{font=small,labelfont=bf}}{}
+
+\graphicspath{{figures/}}
+\setlength{\parskip}{0.3em}
+\setlength{\bibsep}{2pt}
+
+% Comandes per mantenir la notació coherent a tot el document.
+\newcommand{\etq}[1]{\texttt{#1}}          % etiquetes i noms d'entitat
+\newcommand{\mindelta}{\texttt{min\_delta}}
+
+\title{Pràctica 2, part 2: reconeixement d'entitats anomenades a ATIS}
+\author{Laia Beyloc Guzmán \and Ilyas Ouacham Rhailane}
+\date{Tractament de la Veu i el Diàleg\\[4pt]\today}
+
+\begin{document}
+\maketitle
+
+\input{sections/01_introduccio}
+\input{sections/02_experiments}
+\input{sections/03_conclusions}
+\input{sections/04_us_ia}
+
+\input{sections/referencies}
+
+\end{document}

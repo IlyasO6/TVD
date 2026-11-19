@@ -1,0 +1,20 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+Cap dels encoders que hem provat (CNN, GRU, BiLSTM més profundes, Transformer o híbrids) supera la BiLSTM d'una
+capa del baseline més enllà de la variabilitat entre llavors. Amb frases curtes i 4.000 exemples d'entrenament,
+aquesta xarxa ja té més capacitat de la que les dades poden aprofitar. Les millores han vingut, en canvi, de la
+representació d'entrada: dels vectors GloVe, de la char-CNN i del dropout a l'embedding. Combinats, porten la F1 de
+test de 0,946 a 0,955 i la F1 macro de 0,727 a 0,777, i la millora es manté quan deixem entrenar tots dos models
+sense \mindelta.
+
+Una part dels resultats ha contradit les nostres hipòtesis, i en bona part és el que més ens ha ensenyat: el
+Transformer millora amb més capes, el dropout no fa res a la BiLSTM gran i el CRF, sense restriccions explícites,
+no elimina les seqüències impossibles. També hem après que el \mindelta{} que vam afegir era massa estricte. Als
+dos models on ho hem comprovat ens costava entre 0,2 i 0,4 punts, i si tornéssim a fer l'estudi no el faríem
+servir. Els pesos de classe, per la seva banda, mostren fins a quin punt la mètrica de selecció condiciona el
+resultat final, ja que milloren les classes rares però, amb la F1 micro com a criteri, no entren al model.
+
+L'anàlisi d'errors apunta cap a on continuar. La majoria dels errors que queden són confusions de rol que depenen
+de la intenció de la frase, i un model que aprengués alhora la intenció (la primera part de la pràctica) i les
+entitats disposaria d'aquesta informació. També provaríem la decodificació restringida al CRF.
